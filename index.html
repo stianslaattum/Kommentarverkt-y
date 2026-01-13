@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="no">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kommentar-generator</title>
+
+<style>
+    body {
+        font-family: system-ui, sans-serif;
+        background: #f3f4f6;
+        margin: 0;
+        padding: 20px;
+        display: flex;
+        justify-content: center;
+    }
+
+    .container {
+        max-width: 750px;
+        width: 100%;
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    h1 {
+        text-align: center;
+        margin-top: 0;
+    }
+
+    h2 {
+        margin-bottom: 6px;
+        margin-top: 24px;
+    }
+
+    .kategori {
+        padding: 12px;
+        border: 1px solid #d1d5db;
+        border-radius: 10px;
+        background: #f9fafb;
+    }
+
+    label {
+        display: block;
+        padding: 8px 0;
+        font-size: 1.1rem;
+    }
+
+    input[type="checkbox"], input[type="radio"] {
+        transform: scale(1.4);
+        margin-right: 10px;
+    }
+
+    #output {
+        margin-top: 20px;
+        padding: 16px;
+        background: #eef2ff;
+        border-radius: 10px;
+        min-height: 140px;
+        font-size: 1.15rem;
+        white-space: pre-wrap;
+    }
+
+    button {
+        margin-top: 12px;
+        width: 100%;
+        padding: 14px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 10px;
+        cursor: pointer;
+        background: #2563eb;
+        color: white;
+        font-weight: bold;
+    }
+
+    button:hover {
+        background: #1e40af;
+    }
+</style>
+</head>
+
+<body>
+<div class="container">
+    <h1>Kommentar‑generator</h1>
+
+    <!-- KATEGORI 1 – STRUKTUR -->
+    <h2>Struktur</h2>
+    <div class="kategori">
+        <label><input type="radio" name="struktur" value="god">God struktur</label>
+        <label><input type="checkbox" class="strukturboks" value="innledning">Utydelig innledning</label>
+        <label><input type="checkbox" class="strukturboks" value="hoveddel">Utydelig hoveddel</label>
+        <label><input type="checkbox" class="strukturboks" value="avslutning">Utydelig avslutning</label>
+    </div>
+
+    <!-- KATEGORI 2 – SVARER PÅ OPPGAVEN -->
+    <h2>Svarer på oppgaven</h2>
+    <div class="kategori">
+        <label><input type="radio" name="oppgave" value="ja">Ja</label>
+        <label><input type="radio" name="oppgave" value="nei">Nei</label>
+        <label><input type="radio" name="oppgave" value="tja">Tja</label>
+    </div>
+
+    <!-- KATEGORI 3 – SJANGER -->
+    <h2>Sjangertrekk</h2>
+    <div class="kategori">
+        <label><input type="radio" name="sjanger" value="ja">Ja</label>
+        <label><input type="radio" name="sjanger" value="nei">Nei</label>
+        <label><input type="radio" name="sjanger" value="tja">Tja</label>
+    </div>
+
+    <!-- KATEGORI 4 – RETTSKRIVING -->
+    <h2>Rettskriving</h2>
+    <div class="kategori">
+        <label><input type="radio" name="rett" value="fa">Få feil</label>
+        <label><input type="radio" name="rett" value="tja">Tja</label>
+        <label><input type="radio" name="rett" value="mange">Mange feil</label>
+    </div>
+
+    <button onclick="genererKommentar()">Generer kommentar</button>
+
+    <div id="output"></div>
+
+    <button onclick="kopier()">Kopier kommentar</button>
+</div>
+
+<script>
+function genererKommentar() {
+    let kommentar = [];
+
+    /* -------------------------
+       KATEGORI 1 – STRUKTUR
+    --------------------------*/
+    const strukturValg = document.querySelector("input[name='struktur']:checked");
+    const utydelige = [...document.querySelectorAll(".strukturboks:checked")].map(b => b.value);
+
+    if (strukturValg && strukturValg.value === "god") {
+        kommentar.push("Teksten har en tydelig struktur med innledning, hoveddel og avslutning.");
+    } else if (utydelige.length > 0) {
+        const alle = ["innledning", "hoveddel", "avslutning"];
+        const tydelige = alle.filter(d => !utydelige.includes(d));
+
+        let tydeligTekst = "";
+        if (tydelige.length > 0) {
+            tydeligTekst = "Du har en tydelig " + tydelige.join(" og ") + ", ";
+        } else {
+            tydeligTekst = "Strukturen er gjennomgående uklar, ";
+        }
+
+        let manglerTekst = "men teksten mangler en tydelig " + utydelige.join(" og ") + ".";
+
+        kommentar.push(tydeligTekst + manglerTekst);
+    }
+
+    /* -------------------------
+       KATEGORI 2 – OPPGAVEN
+    --------------------------*/
+    const oppgave = document.querySelector("input[name='oppgave']:checked");
+    if (oppgave) {
+        if (oppgave.value === "ja") kommentar.push("Du svarer godt på det oppgaven ber om.");
+        if (oppgave.value === "nei") kommentar.push("Pass på at du svarer på det oppgaven ber om.");
+        if (oppgave.value === "tja") kommentar.push("Pass på at du holder deg til det oppgaven ber om igjennom hele teksten.");
+    }
+
+    /* -------------------------
+       KATEGORI 3 – SJANGER
+    --------------------------*/
+    const sjanger = document.querySelector("input[name='sjanger']:checked");
+    if (sjanger) {
+        if (sjanger.value === "ja") kommentar.push("Du viser at du kan sjangertrekkene for fagartikkel godt.");
+        if (sjanger.value === "nei") kommentar.push("Du skriver en tekst, men ikke en fagartikkel.");
+        if (sjanger.value === "tja") kommentar.push("Pass på at du holder deg til sjangertrekkene for en fagartikkel igjennom hele teksten.");
+    }
+
+    /* -------------------------
+       KATEGORI 4 – RETTSKRIVING
+    --------------------------*/
+    const rett = document.querySelector("input[name='rett']:checked");
+    if (rett) {
+        if (rett.value === "fa") kommentar.push("Du har få feil med rettskriving, bra!");
+        if (rett.value === "tja") kommentar.push("Det er noen skrivefeil i teksten.");
+        if (rett.value === "mange") kommentar.push("Det er en del skrivefeil i teksten din.");
+    }
+
+    document.getElementById("output").textContent =
+        kommentar.length > 0 ? kommentar.join(" ") : "Ingen valg gjort ennå.";
+}
+
+function kopier() {
+    const tekst = document.getElementById("output").textContent;
+    navigator.clipboard.writeText(tekst);
+}
+</script>
+
+</body>
+</html>
